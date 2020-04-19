@@ -6,7 +6,7 @@ from telethon.tl.types import InputPeerUser
 import utils
 import time
 
-def dbInit(db):
+def initDb(db):
     if len(db.all()) != 1:
         db.purge()
         db.insert({"afk": False, "note": "", "know": [], "since": 0})
@@ -16,18 +16,18 @@ class Module(moduling.Module):
         self.name = "AFK"
 
     async def afkcmd(self, db, client, message, cmd):
-        dbInit(db)
+        initDb(db)
         item = db.all()[0]
-        if item["afk"] == False:
+        if not item["afk"]:
             db.update({"afk": True, "note": cmd.arg, "know": [], "since": time.time()})
             await utils.send(message, "<b>I'm going AFK</b>" + (('\n<b>Note: </b>' + cmd.arg) if cmd.arg else ""))
         else:
             await utils.send(message, "<b>I'm already AFK</b>" + (('\n<b>Note: </b>' + item["note"]) if item["note"] else ""))
 
     async def unafkcmd(self, db, client, message, cmd):
-        dbInit(db)
+        initDb(db)
         item = db.all()[0]
-        if item["afk"] == False:
+        if not item["afk"]:
             await utils.send(message, "<b>I haven't been AFK</b>")
         else:
             db.update({"afk": False, "note": "", "know": [], "since": 0})
@@ -35,15 +35,15 @@ class Module(moduling.Module):
     
     async def incoming(self, db, client, message):
         if isinstance(message._input_chat, InputPeerUser):
-            if message._sender != None:
+            if not message._sender is None:
                 if message._sender.bot:
                     return
-            dbInit(db)
+            initDb(db)
             item = db.all()[0]
-            if message.from_id not in item["know"]:
-                if item["afk"] == True:
-                    if item["note"] != "":
-                        await utils.send(message, "<b>I'm AFK for</b> <i>{}</i><b>!</b>\n<b>Note: </b>{}".format(utils.formatSeconds(time.time() - item["since"]), item["note"]))
-                    else:
-                        await utils.send(message, "<b>I'm AFK for</b> <i>{}</i><b>!</b>".format(utils.formatSeconds(time.time()-item["since"])))
-                    db.update({"know": item["know"] + [message.from_id]})
+            if message.from_id in item["know"] or not item["afk"]:
+                return
+            if item["note"] != "":
+                await utils.send(message, "<b>I'm AFK for</b> <i>{}</i><b>!</b>\n<b>Note: </b>{}".format(utils.formatSeconds(time.time() - item["since"]), item["note"]))
+            else:
+                await utils.send(message, "<b>I'm AFK for</b> <i>{}</i><b>!</b>".format(utils.formatSeconds(time.time()-item["since"])))
+            db.update({"know": item["know"] + [message.from_id]})

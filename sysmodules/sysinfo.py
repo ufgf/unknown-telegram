@@ -23,9 +23,10 @@ class Module(moduling.Module):
             with open("/etc/os-release") as f:
                 for line in f:
                     k,v = line.rstrip().split("=")
-                    if k == "NAME":
-                        distr = v.strip('"')
-                        break
+                    if k != "NAME":
+                        continue
+                    distr = v.strip('"')
+                    break
         commit = ""
         try:
             commit = self.repo.commit("master").__str__()[:10]
@@ -43,6 +44,6 @@ class Module(moduling.Module):
                 res = item()
             else:
                 res = item
-            if res != "":
+            if res:
                 lines.append("<b>• {}</b>: <code>{}</code>".format(name, res))
         await utils.send(message, "<b>System Info:</b>\n" + '\n'.join(lines))
