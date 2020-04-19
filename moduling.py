@@ -11,17 +11,17 @@ class Module():
         self.name = "Unknown"
 
 
-def getModulesPy(folder):
+def get_modules_py(folder):
     res = []
     files = []
     try:
         files = os.listdir(folder)
     except:
         return []
-    for i in files:
-        if i == "__init__.py":
+    for f in files:
+        if f == "__init__.py":
             continue
-        mod_name, ext = os.path.splitext(i)
+        mod_name, ext = os.path.splitext(f)
         if ext == ".py":
             try:
                 res.append(importlib.import_module(
@@ -32,9 +32,9 @@ def getModulesPy(folder):
     return res
 
 
-def getModules(modulesPy, db):
+def get_modules(mods_py, db):
     modules = []
-    for mod in modulesPy:
+    for mod in mods_py:
         attr = None
         try:
             attr = mod.__getattribute__("Module")
@@ -49,7 +49,7 @@ def getModules(modulesPy, db):
                 continue
             _mod = attr()
             _mod.commands = {}
-            _mod.incomingHandler = None
+            _mod.incoming_handler = None
             _mod.db = db.table("module_" + os.path.basename(mod.__file__)[:-3])
             for i in dir(_mod):
                 if i.startswith("__") and i.endswith("__"):
@@ -60,7 +60,7 @@ def getModules(modulesPy, db):
                         if i.endswith("cmd"):
                             _mod.commands[i[:-3]] = _attr
                         else:
-                            _mod.incomingHandler = _attr
+                            _mod.incoming_handler = _attr
             logging.info("Loaded module '{}'.".format(_mod.name))
             modules.append(_mod)
     return modules

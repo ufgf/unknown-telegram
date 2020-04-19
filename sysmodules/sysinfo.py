@@ -40,7 +40,7 @@ class Module(moduling.Module):
                  "Distribution": distr,
                  "Arch": platform.machine, "Python": platform.python_version,
                  "Telethon": __version__, "Commit": commit,
-                 "Uptime": utils.formatSeconds(time.time() - self.start)}
+                 "Uptime": utils.format_seconds(time.time() - self.start)}
         lines = []
         for name, item in pairs.items():
             res = ""

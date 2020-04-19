@@ -26,9 +26,9 @@ db = TinyDB('db.json')
 
 logging.info("Loading modules...")
 
-sysModules = moduling.getModules(moduling.getModulesPy("sysmodules"), db)
-userModules = moduling.getModules(moduling.getModulesPy("modules"), db)
-modules = sysModules + userModules
+sys_modules = moduling.get_modules(moduling.get_modules_py("sysmodules"), db)
+user_modules = moduling.get_modules(moduling.get_modules_py("modules"), db)
+modules = sys_modules + user_modules
 
 logging.info("Modules loaded: {}".format(len(modules)))
 
@@ -39,13 +39,13 @@ restart = False
 async def helpcmd(client, message):
     sysmods = []
     usermods = []
-    for mod in sysModules:
+    for mod in sys_modules:
         cmds = []
         for cmdname, _ in mod.commands.items():
             cmds.append(cmdname)
         sysmods.append(
             "<b>• {}:</b> <code>{}</code>".format(mod.name, ', '.join(cmds)))
-    for mod in userModules:
+    for mod in user_modules:
         cmds = []
         for cmdname, _ in mod.commands.items():
             cmds.append(cmdname)
@@ -120,7 +120,7 @@ async def coreHandler(client, message, command):
     return False
 
 
-async def outgoingHandler(event):
+async def outgoing_handler(event):
     client = event._client
     message = event.message
     command = cmd.Command(message.raw_text)
@@ -138,14 +138,14 @@ async def outgoingHandler(event):
             break
 
 
-async def incomingHandler(event):
+async def incoming_handler(event):
     client = event._client
     message = event.message
     for module in modules:
-        if module.incomingHandler is None:
+        if module.incoming_handler is None:
             continue
         try:
-            await module.incomingHandler(module.db, client, message)
+            await module.incoming_handler(module.db, client, message)
         except Exception as e:
             logging.error(e)
 
@@ -158,9 +158,9 @@ client = TelegramClient(
     system_version="SDK 29")
 client.parse_mode = "html"
 client.start(lambda: input('Please enter your phone: '))
-client.add_event_handler(incomingHandler,
+client.add_event_handler(incoming_handler,
                          events.NewMessage(incoming=True))
-client.add_event_handler(outgoingHandler,
+client.add_event_handler(outgoing_handler,
                          events.NewMessage(outgoing=True, forwards=False))
 client.run_until_disconnected()
 

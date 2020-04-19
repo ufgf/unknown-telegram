@@ -9,7 +9,7 @@ import moduling
 import utils
 
 
-def initDb(db):
+def init_db(db):
     if len(db.all()) != 1:
         db.purge()
         db.insert({"afk": False, "note": "", "know": [], "since": 0})
@@ -20,7 +20,7 @@ class Module(moduling.Module):
         self.name = "AFK"
 
     async def afkcmd(self, db, client, message, cmd):
-        initDb(db)
+        init_db(db)
         item = db.all()[0]
         if not item["afk"]:
             db.update({"afk": True, "note": cmd.arg,
@@ -30,7 +30,7 @@ class Module(moduling.Module):
             await utils.send(message, "<b>I'm already AFK</b>" + (('\n<b>Note: </b>' + item["note"]) if item["note"] else ""))
 
     async def unafkcmd(self, db, client, message, cmd):
-        initDb(db)
+        init_db(db)
         item = db.all()[0]
         if not item["afk"]:
             await utils.send(message, "<b>I haven't been AFK</b>")
@@ -43,12 +43,12 @@ class Module(moduling.Module):
             if not message._sender is None:
                 if message._sender.bot:
                     return
-            initDb(db)
+            init_db(db)
             item = db.all()[0]
             if message.from_id in item["know"] or not item["afk"]:
                 return
             if item["note"] != "":
-                await utils.send(message, "<b>I'm AFK for</b> <i>{}</i><b>!</b>\n<b>Note: </b>{}".format(utils.formatSeconds(time.time() - item["since"]), item["note"]))
+                await utils.send(message, "<b>I'm AFK for</b> <i>{}</i><b>!</b>\n<b>Note: </b>{}".format(utils.format_seconds(time.time() - item["since"]), item["note"]))
             else:
-                await utils.send(message, "<b>I'm AFK for</b> <i>{}</i><b>!</b>".format(utils.formatSeconds(time.time()-item["since"])))
+                await utils.send(message, "<b>I'm AFK for</b> <i>{}</i><b>!</b>".format(utils.format_seconds(time.time()-item["since"])))
             db.update({"know": item["know"] + [message.from_id]})

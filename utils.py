@@ -5,7 +5,7 @@ from telethon.extensions import html
 from telethon.tl.custom.message import Message
 
 
-def escapeHtml(source):
+def escape_html(source):
     changes = {"&": "&amp;", "<": "&lt;",
                ">": "&gt;", "\"": "&quot;", "'": "&#39;"}
     for frm, to in changes.items():
@@ -47,7 +47,7 @@ async def send(message, content, **kwargs):
             return res
 
 
-def formatSeconds(sec):
+def format_seconds(sec):
     MINUTE = 60
     HOUR = MINUTE * 60
     DAY = HOUR * 24
