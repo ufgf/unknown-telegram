@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 # Coded by @maxunof with power of Senko!
 
-import moduling
-import platform
-import utils
-import sys
 import os
+import platform
+import sys
 import time
-from telethon import __version__
+
 from git import Repo
+from telethon import __version__
+
+import moduling
+import utils
+
 
 class Module(moduling.Module):
     def __init__(self):
         self.name = "System Info"
-        self.repo = Repo(os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)))
+        self.repo = Repo(os.path.dirname(
+            os.path.abspath(sys.modules['__main__'].__file__)))
         self.start = time.time()
 
     async def infocmd(self, db, client, message, cmd):
@@ -22,7 +26,7 @@ class Module(moduling.Module):
         if os == "Linux":
             with open("/etc/os-release") as f:
                 for line in f:
-                    k,v = line.rstrip().split("=")
+                    k, v = line.rstrip().split("=")
                     if k != "NAME":
                         continue
                     distr = v.strip('"')
@@ -33,10 +37,10 @@ class Module(moduling.Module):
         except:
             pass
         pairs = {"OS": os, "Release": platform.release,
-            "Distribution": distr,
-            "Arch": platform.machine, "Python": platform.python_version,
-            "Telethon": __version__, "Commit": commit,
-            "Uptime": utils.formatSeconds(time.time() - self.start)}
+                 "Distribution": distr,
+                 "Arch": platform.machine, "Python": platform.python_version,
+                 "Telethon": __version__, "Commit": commit,
+                 "Uptime": utils.formatSeconds(time.time() - self.start)}
         lines = []
         for name, item in pairs.items():
             res = ""

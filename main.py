@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 # Coded by @maxunof with power of Senko!
 
-import importlib
-import os
-import sys
-import logging
-import moduling
 import cmd
+import importlib
+import logging
+import os
 import subprocess
-import utils
-from telethon.sync import TelegramClient, events
+import sys
+
 from git import Repo
-from tinydb import TinyDB, Query
+from telethon.sync import TelegramClient, events
+from tinydb import Query, TinyDB
+
+import moduling
+import utils
 
 GIT_MASTER = "https://github.com/MaxUNof/unknown-telegram.git"
 
@@ -33,6 +35,7 @@ logging.info("Modules loaded: {}".format(len(modules)))
 # TODO: Do this better
 restart = False
 
+
 async def helpcmd(client, message):
     sysmods = []
     usermods = []
@@ -50,6 +53,7 @@ async def helpcmd(client, message):
             "<b>• {}:</b> <code>{}</code>".format(mod.name, ', '.join(cmds)))
     await utils.send(message, "<b>Help for Unknown Telegram</b>\n\n<b>System Modules:</b>\n{}\n\n<b>User Modules:</b>\n{}".format('\n'.join(sysmods), '\n'.join(usermods)))
     return True
+
 
 async def updatecmd(client, message):
     await utils.send(message, "<b>Fetching last version from the git...</b>")
@@ -87,7 +91,7 @@ async def updatecmd(client, message):
     await utils.send(message, "<b>Updating requirements...</b>")
     try:
         subprocess.run([sys.executable, "-m", "pip", "install", "--user", "-r",
-            os.path.join(ROOT_DIR, "requirements.txt")])
+                        os.path.join(ROOT_DIR, "requirements.txt")])
     except subprocess.CalledProcessError:
         await utils.send(message, "<b>Can't update requirements!</b>")
         return True
@@ -97,12 +101,14 @@ async def updatecmd(client, message):
     await client.disconnect()
     return True
 
+
 async def restartcmd(client, message):
     await utils.send(message, "<b>Restarting...</b>")
     global restart
     restart = True
     await client.disconnect()
     return True
+
 
 async def coreHandler(client, message, command):
     if command.cmd == "help":
@@ -112,6 +118,7 @@ async def coreHandler(client, message, command):
     if command.cmd == "restart":
         return (await restartcmd(client, message))
     return False
+
 
 async def outgoingHandler(event):
     client = event._client
@@ -129,6 +136,7 @@ async def outgoingHandler(event):
                 logging.error(e)
                 await utils.send(message, "<b>An error occurred while executing the module.</b>")
             break
+
 
 async def incomingHandler(event):
     client = event._client
@@ -151,9 +159,9 @@ client = TelegramClient(
 client.parse_mode = "html"
 client.start(lambda: input('Please enter your phone: '))
 client.add_event_handler(incomingHandler,
-    events.NewMessage(incoming=True))
+                         events.NewMessage(incoming=True))
 client.add_event_handler(outgoingHandler,
-    events.NewMessage(outgoing=True, forwards=False))
+                         events.NewMessage(outgoing=True, forwards=False))
 client.run_until_disconnected()
 
 if restart:

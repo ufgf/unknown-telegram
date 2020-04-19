@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 # Coded by @maxunof with power of Senko!
 
-import moduling
-from telethon.tl.types import InputPeerUser
-import utils
 import time
+
+from telethon.tl.types import InputPeerUser
+
+import moduling
+import utils
+
 
 def initDb(db):
     if len(db.all()) != 1:
         db.purge()
         db.insert({"afk": False, "note": "", "know": [], "since": 0})
+
 
 class Module(moduling.Module):
     def __init__(self):
@@ -19,7 +23,8 @@ class Module(moduling.Module):
         initDb(db)
         item = db.all()[0]
         if not item["afk"]:
-            db.update({"afk": True, "note": cmd.arg, "know": [], "since": time.time()})
+            db.update({"afk": True, "note": cmd.arg,
+                       "know": [], "since": time.time()})
             await utils.send(message, "<b>I'm going AFK</b>" + (('\n<b>Note: </b>' + cmd.arg) if cmd.arg else ""))
         else:
             await utils.send(message, "<b>I'm already AFK</b>" + (('\n<b>Note: </b>' + item["note"]) if item["note"] else ""))
@@ -32,7 +37,7 @@ class Module(moduling.Module):
         else:
             db.update({"afk": False, "note": "", "know": [], "since": 0})
             await utils.send(message, "<b>I'm not longer AFK</b>")
-    
+
     async def incoming(self, db, client, message):
         if isinstance(message._input_chat, InputPeerUser):
             if not message._sender is None:

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Coded by @maxunof with power of Senko!
 
+import importlib
 import logging
 import os
-import importlib
 
 
 class Module():
@@ -17,7 +17,7 @@ def getModulesPy(folder):
     try:
         files = os.listdir(folder)
     except:
-      	return []
+        return []
     for i in files:
         if i == "__init__.py":
             continue

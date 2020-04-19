@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Coded by @maxunof with power of Senko!
 
+
 class Command():
     def __init__(self, text):
         self.full = ""
