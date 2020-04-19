@@ -24,13 +24,16 @@ class Module(moduling.Module):
         os = platform.system()
         distr = ""
         if os == "Linux":
-            with open("/etc/os-release") as f:
-                for line in f:
-                    k, v = line.rstrip().split("=")
-                    if k != "NAME":
-                        continue
-                    distr = v.strip('"')
-                    break
+            try:
+                with open("/etc/os-release") as f:
+                    for line in f:
+                        k, v = line.rstrip().split("=")
+                        if k != "NAME":
+                            continue
+                        distr = v.strip('"')
+                        break
+            except:
+                pass
         commit = ""
         try:
             commit = self.repo.commit("master").__str__()[:10]
