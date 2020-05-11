@@ -36,7 +36,7 @@ class Module(moduling.Module):
             await utils.send(message, "<b>I haven't been AFK</b>")
         else:
             db.update({"afk": False, "note": "", "know": [], "since": 0})
-            await utils.send(message, "<b>I'm not longer AFK</b>")
+            await utils.send(message, "<b>I'm not longer AFK</b>\n<b>Time spent in AFK: </b><i>{}</i>".format(utils.format_seconds(time.time() - item["since"])))
 
     async def incoming(self, db, client, message):
         if isinstance(message._input_chat, InputPeerUser):
