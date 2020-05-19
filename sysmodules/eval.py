@@ -3,6 +3,7 @@
 
 import moduling
 import utils
+from meval import meval
 
 
 class Module(moduling.Module):
@@ -15,7 +16,7 @@ class Module(moduling.Module):
             return
         res = ""
         try:
-            res = eval(cmd.arg)
+            res = await meval(cmd.arg, globals())
         except Exception as e:
             await utils.send(message, "<b>Can't eval expression:</b>\n<code>{}</code>".format(e))
             return
