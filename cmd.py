@@ -14,4 +14,4 @@ class Command():
             self.cmd = split[0]
             if len(split) > 1:
                 self.arg = split[1]
-            self.args = self.arg.split(" ")
+                self.args = self.arg.split(" ")
