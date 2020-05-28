@@ -16,7 +16,7 @@ class Module(moduling.Module):
             return
         res = ""
         try:
-            res = await meval(cmd.arg, globals())
+            res = await meval(cmd.arg, globals(), db=db, client=client, message=message, cmd=cmd)
         except Exception as e:
             await utils.send(message, "<b>Can't eval expression:</b>\n<code>{}</code>".format(e))
             return
