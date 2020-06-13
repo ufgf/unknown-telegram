@@ -10,7 +10,7 @@ class Module(moduling.Module):
     def __init__(self):
         self.name = "F"
         self.patterns = ["FFFFF\nF\nFFF\nF\nF"] # maybe will be expanded
-        self.emoji_patterns = ["FFFF\nF\nFFF\nF\nF"]
+        self.emoji_patterns = ["FFFFF\nF\nF\nFFF\nF\nF\nF"]
 
     async def fcmd(self, db, client, message, cmd):
         symbol = ""
