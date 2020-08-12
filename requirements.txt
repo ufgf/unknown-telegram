@@ -1,6 +1,6 @@
-requests >= 2.22.0
-Telethon >= 1.10.6
-GitPython >= 3.1.0
-tinydb >= 3.15.2
-emoji >= 0.5.4
+requests
+Telethon >= 1.16.1
+GitPython
+tinydb
+emoji
 meval >= 2.5
