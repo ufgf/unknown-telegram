@@ -35,22 +35,21 @@ logging.info("Modules loaded: {}".format(len(modules)))
 # TODO: Do this better
 restart = False
 
+def format_cmd(mod):
+    cmds = []
+    for cmdname, _ in mod.commands.items():
+        cmds.append(cmdname)
+    if len(cmds) == 0:
+        return "<b>• {}</b>".format(mod.name)
+    return "<b>• {}:</b> <code>{}</code>".format(mod.name, ', '.join(cmds))
 
 async def helpcmd(client, message):
     sysmods = []
     usermods = []
     for mod in sys_modules:
-        cmds = []
-        for cmdname, _ in mod.commands.items():
-            cmds.append(cmdname)
-        sysmods.append(
-            "<b>• {}:</b> <code>{}</code>".format(mod.name, ', '.join(cmds)))
+        sysmods.append(format_cmd(mod))
     for mod in user_modules:
-        cmds = []
-        for cmdname, _ in mod.commands.items():
-            cmds.append(cmdname)
-        usermods.append(
-            "<b>• {}:</b> <code>{}</code>".format(mod.name, ', '.join(cmds)))
+        usermods.append(format_cmd(mod))
     await utils.send(message, "<b>Help for Unknown Telegram</b>\n\n<b>System Modules:</b>\n{}\n\n<b>User Modules:</b>\n{}".format('\n'.join(sysmods), '\n'.join(usermods)))
     return True
 
