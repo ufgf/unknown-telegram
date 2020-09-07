@@ -19,7 +19,7 @@ class Module(moduling.Module):
     def __init__(self):
         self.name = "AFK"
 
-    async def afkcmd(self, db, client, message, cmd):
+    async def afk_cmd(self, db, client, message, cmd):
         init_db(db)
         item = db.all()[0]
         if not item["afk"]:
@@ -29,7 +29,7 @@ class Module(moduling.Module):
         else:
             await utils.send(message, "<b>I'm already AFK</b>" + (('\n<b>Note: </b>' + item["note"]) if item["note"] else ""))
 
-    async def unafkcmd(self, db, client, message, cmd):
+    async def unafk_cmd(self, db, client, message, cmd):
         init_db(db)
         item = db.all()[0]
         if not item["afk"]:

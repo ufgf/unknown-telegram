@@ -20,7 +20,7 @@ class Module(moduling.Module):
             os.path.abspath(sys.modules['__main__'].__file__)))
         self.start = time.time()
 
-    async def infocmd(self, db, client, message, cmd):
+    async def info_cmd(self, db, client, message, cmd):
         os = platform.system()
         distr = ""
         if os == "Linux":

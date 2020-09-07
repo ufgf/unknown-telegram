@@ -11,7 +11,7 @@ class Module(moduling.Module):
     def __init__(self):
         self.name = "Suspension"
 
-    async def suspendcmd(self, db, client, message, cmd):
+    async def suspend_cmd(self, db, client, message, cmd):
         try:
             seconds = int(cmd.arg)
             await utils.send(message, "<b>Bot is sleeping for {} seconds 😴</b>".format(seconds))

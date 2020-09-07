@@ -9,7 +9,7 @@ class Module(moduling.Module):
     def __init__(self):
         self.name = "Dump"
 
-    async def dumpcmd(self, db, client, message, cmd):
+    async def dump_cmd(self, db, client, message, cmd):
         msg = message
         if message.is_reply:
             msg = (await message.get_reply_message())

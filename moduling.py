@@ -54,11 +54,11 @@ def get_modules(mods_py, db):
             for i in dir(_mod):
                 if i.startswith("__") and i.endswith("__"):
                     continue
-                if i.endswith("cmd") or i == "incoming":
+                if i.endswith("_cmd") or i == "incoming":
                     _attr = getattr(_mod, i)
                     if _attr.__class__.__name__ == "method":
-                        if i.endswith("cmd"):
-                            _mod.commands[i[:-3]] = _attr
+                        if i.endswith("_cmd"):
+                            _mod.commands[i[:-4]] = _attr
                         else:
                             _mod.incoming_handler = _attr
             logging.info("Loaded module '{}'.".format(_mod.name))

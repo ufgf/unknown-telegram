@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 # Coded by @maxunof with power of Senko! 
 
+from telethon.tl.types import InputMediaDice
+
 import moduling
 import utils
-from telethon.tl.types import InputMediaDice
+
 
 class Module(moduling.Module):
     def __init__(self):
         self.name = "Dice"
 
-    async def dicecmd(self, db, client, message, cmd):
+    async def dice_cmd(self, db, client, message, cmd):
         if len(cmd.args) == 0:
            await utils.send(message, "<b>Incorrect command usage!</b>\n<b>You can pass two arguments: number and emoji.</b>")
            return

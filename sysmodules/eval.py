@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # Coded by @maxunof with power of Senko!
 
+from meval import meval
+
 import moduling
 import utils
-from meval import meval
 
 
 class Module(moduling.Module):
     def __init__(self):
         self.name = "Eval"
 
-    async def evalcmd(self, db, client, message, cmd):
+    async def eval_cmd(self, db, client, message, cmd):
         if cmd.arg == "":
             await utils.send(message, '<b>You need to specify expression.</b>')
             return

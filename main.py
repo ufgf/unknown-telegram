@@ -35,6 +35,7 @@ logging.info("Modules loaded: {}".format(len(modules)))
 # TODO: Do this better
 restart = False
 
+
 def format_cmd(mod):
     cmds = []
     for cmdname, _ in mod.commands.items():
@@ -43,7 +44,8 @@ def format_cmd(mod):
         return "<b>• {}</b>".format(mod.name)
     return "<b>• {}:</b> <code>{}</code>".format(mod.name, ', '.join(cmds))
 
-async def helpcmd(client, message):
+
+async def help_cmd(client, message):
     sysmods = []
     usermods = []
     for mod in sys_modules:
@@ -54,7 +56,7 @@ async def helpcmd(client, message):
     return True
 
 
-async def updatecmd(client, message):
+async def update_cmd(client, message):
     await utils.send(message, "<b>Fetching last version from the git...</b>")
     repo = Repo(ROOT_DIR)
     try:
@@ -101,7 +103,7 @@ async def updatecmd(client, message):
     return True
 
 
-async def restartcmd(client, message):
+async def restart_cmd(client, message):
     await utils.send(message, "<b>Restarting...</b>")
     global restart
     restart = True
@@ -109,13 +111,13 @@ async def restartcmd(client, message):
     return True
 
 
-async def coreHandler(client, message, command):
+async def core_handler(client, message, command):
     if command.cmd == "help":
-        return (await helpcmd(client, message))
+        return (await help_cmd(client, message))
     if command.cmd == "update":
-        return (await updatecmd(client, message))
+        return (await update_cmd(client, message))
     if command.cmd == "restart":
-        return (await restartcmd(client, message))
+        return (await restart_cmd(client, message))
     return False
 
 
@@ -125,7 +127,7 @@ async def outgoing_handler(event):
     command = cmd.Command(message.raw_text)
     if command.full == "":
         return
-    if (await coreHandler(client, message, command)):
+    if (await core_handler(client, message, command)):
         return
     for module in modules:
         if command.cmd in module.commands:
