@@ -19,10 +19,13 @@ class Module(moduling.Module):
         out = (await sh.stdout.read())
         enc = chardet.detect(out)["encoding"]
 
+        stdout = ""
         if enc is None:
-            await utils.send(message, "<b>No data received</b>")
-            return
-        await utils.send(message, "<code>{}</code>".format(out.decode(enc)))
+            stdout = "No data received"
+        else:
+            stdout = out.decode(enc)
+
+        await utils.send(message, "<b>Command: </b><code>{}</code>\n<b>Status code: </b><code>{}</code>\n\n<b>Output:</b>\n<code>{}</code>".format(cmd, sh.returncode, stdout))
 
     async def neofetch_cmd(self, client, message, cmd):
         await self.run(message, "neofetch --stdout")
