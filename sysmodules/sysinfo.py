@@ -14,13 +14,13 @@ import utils
 
 
 class Module(moduling.Module):
-    def __init__(self):
+    def __init__(self, db):
         self.name = "System Info"
         self.repo = Repo(os.path.dirname(
             os.path.abspath(sys.modules['__main__'].__file__)))
         self.start = time.time()
 
-    async def info_cmd(self, db, client, message, cmd):
+    async def info_cmd(self, client, message, cmd):
         os = platform.system()
         distr = ""
         if os == "Linux":

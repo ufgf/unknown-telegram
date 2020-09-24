@@ -8,10 +8,10 @@ import utils
 
 
 class Module(moduling.Module):
-    def __init__(self):
+    def __init__(self, db):
         self.name = "Ping"
 
-    async def ping_cmd(self, db, client, message, cmd):
+    async def ping_cmd(self, client, message, cmd):
         start = datetime.datetime.now()
         await utils.send(message, "🏓 <b>Calculating...</b>")
         end = datetime.datetime.now()

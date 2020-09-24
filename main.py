@@ -26,9 +26,8 @@ db = TinyDB('db.json')
 
 logging.info("Loading modules...")
 
-sys_modules = moduling.get_modules(moduling.get_modules_py("sysmodules"), db)
-user_modules = moduling.get_modules(moduling.get_modules_py("modules"), db)
-modules = sys_modules + user_modules
+modules = moduling.get_modules(
+    moduling.get_modules_py("sysmodules"), db, system=True) + moduling.get_modules(moduling.get_modules_py("modules"), db)
 
 logging.info("Modules loaded: {}".format(len(modules)))
 
@@ -38,7 +37,7 @@ restart = False
 
 def format_cmd(mod):
     cmds = []
-    for cmdname, _ in mod.commands.items():
+    for cmdname, _ in mod.props["commands"].items():
         cmds.append(cmdname)
     if len(cmds) == 0:
         return "<b>• {}</b>".format(mod.name)
@@ -48,10 +47,12 @@ def format_cmd(mod):
 async def help_cmd(client, message):
     sysmods = []
     usermods = []
-    for mod in sys_modules:
-        sysmods.append(format_cmd(mod))
-    for mod in user_modules:
-        usermods.append(format_cmd(mod))
+    for mod in modules:
+        cmd = format_cmd(mod)
+        if mod.props["system"]:
+            sysmods.append(cmd)
+            continue
+        usermods.append(cmd)
     await utils.send(message, "<b>Help for Unknown Telegram</b>\n\n<b>System Modules:</b>\n{}\n\n<b>User Modules:</b>\n{}".format('\n'.join(sysmods), '\n'.join(usermods)))
     return True
 
@@ -130,9 +131,9 @@ async def outgoing_handler(event):
     if (await core_handler(client, message, command)):
         return
     for module in modules:
-        if command.cmd in module.commands:
+        if command.cmd in module.props["commands"]:
             try:
-                await module.commands[command.cmd](module.db, client, message, command)
+                await module.props["commands"][command.cmd](client, message, command)
             except Exception as e:
                 logging.error(e)
                 await utils.send(message, "<b>An error occurred while executing the module.</b>")
@@ -143,10 +144,10 @@ async def incoming_handler(event):
     client = event._client
     message = event.message
     for module in modules:
-        if module.incoming_handler is None:
+        if module.props["incoming_handler"] is None:
             continue
         try:
-            await module.incoming_handler(module.db, client, message)
+            await module.props["incoming_handler"](client, message)
         except Exception as e:
             logging.error(e)
 

@@ -32,7 +32,7 @@ def get_modules_py(folder):
     return res
 
 
-def get_modules(mods_py, db):
+def get_modules(mods_py, db, system=False):
     modules = []
     for mod in mods_py:
         attr = None
@@ -47,10 +47,16 @@ def get_modules(mods_py, db):
         if kind == "type":
             if not issubclass(attr, Module):
                 continue
-            _mod = attr()
-            _mod.commands = {}
-            _mod.incoming_handler = None
-            _mod.db = db.table("module_" + os.path.basename(mod.__file__)[:-3])
+            try:
+                _mod = attr(db.table("module_" + os.path.basename(mod.__file__)[:-3]))
+            except Exception as e:
+                logging.info("Can't load module '{}'.\n{}".format(mod.__name__, e))
+                continue
+            _mod.props = {
+                "commands": {},
+                "incoming_handler": None,
+                "system": system
+            }
             for i in dir(_mod):
                 if i.startswith("__") and i.endswith("__"):
                     continue
@@ -58,9 +64,9 @@ def get_modules(mods_py, db):
                     _attr = getattr(_mod, i)
                     if _attr.__class__.__name__ == "method":
                         if i.endswith("_cmd"):
-                            _mod.commands[i[:-4]] = _attr
+                            _mod.props["commands"][i[:-4]] = _attr
                         else:
-                            _mod.incoming_handler = _attr
+                            _mod.props["incoming_handler"] = _attr
             logging.info("Loaded module '{}'.".format(_mod.name))
             modules.append(_mod)
     return modules

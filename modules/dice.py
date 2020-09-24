@@ -8,10 +8,10 @@ import utils
 
 
 class Module(moduling.Module):
-    def __init__(self):
+    def __init__(self, db):
         self.name = "Dice"
 
-    async def dice_cmd(self, db, client, message, cmd):
+    async def dice_cmd(self, client, message, cmd):
         if len(cmd.args) == 0:
            await utils.send(message, "<b>Incorrect command usage!</b>\n<b>You can pass two arguments: number and emoji.</b>")
            return

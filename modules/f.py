@@ -10,12 +10,12 @@ import utils
 
 
 class Module(moduling.Module):
-    def __init__(self):
+    def __init__(self, db):
         self.name = "F"
         self.patterns = ["FFFFF\nF\nFFF\nF\nF"]  # maybe will be expanded
         self.emoji_patterns = ["FFFFF\nF\nF\nFFF\nF\nF\nF"]
 
-    async def f_cmd(self, db, client, message, cmd):
+    async def f_cmd(self, client, message, cmd):
         symbol = ""
         res = ""
         if cmd.arg in emoji.UNICODE_EMOJI:

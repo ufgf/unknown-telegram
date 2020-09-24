@@ -16,9 +16,11 @@ def escape_html(source):
 async def send(message, content, **kwargs):
     res = []
     if isinstance(content, Message):
-        await message.edit("<b>Sending message...</b>")
         res.append(await message.respond(content, **kwargs))
-        await message.delete()
+        try:
+            await message.delete()
+        except:
+            pass
         return res
     if isinstance(content, str) and not kwargs.get("force_file", False):
         myID = (await message.client.get_me(True)).user_id
