@@ -25,7 +25,7 @@ class Module(moduling.Module):
         else:
             stdout = out.decode(enc)
 
-        await utils.send(message, "<b>Command: </b><code>{}</code>\n<b>Status code: </b><code>{}</code>\n\n<b>Output:</b>\n<code>{}</code>".format(cmd, sh.returncode, stdout))
+        await utils.send(message, "<b>Command: </b><code>{}</code>\n<b>Status code: </b><code>{}</code>\n\n<b>Output:</b>\n<code>{}</code>".format(utils.escape_html(cmd), sh.returncode, utils.escape_html(stdout)))
 
     async def neofetch_cmd(self, client, message, cmd):
         await self.run(message, "neofetch --stdout")

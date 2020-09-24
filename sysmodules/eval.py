@@ -25,4 +25,4 @@ class Module(moduling.Module):
         except Exception as e:
             await utils.send(message, "<b>Can't eval expression:</b>\n<code>{}</code>".format(e))
             return
-        await utils.send(message, "<b>Expression: </b><code>{}</code>\n<b>Result: </b><code>{}</code>".format(cmd.arg, str(res)))
+        await utils.send(message, "<b>Expression: </b><code>{}</code>\n<b>Result: </b><code>{}</code>".format(utils.escape_html(cmd.arg), utils.escape_html(str(res))))
