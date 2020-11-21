@@ -125,7 +125,7 @@ async def outgoing_handler(event):
     client = event._client
     message = event.message
     command = cmd.Command(message.raw_text)
-    if command.full == "":
+    if command.cmd == "":
         return
     for module in modules:
         if command.cmd in module.props["commands"]:
