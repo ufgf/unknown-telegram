@@ -145,3 +145,4 @@ static
 utg.*
 db.json
 *.sh
+.vscode

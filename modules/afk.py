@@ -12,7 +12,10 @@ import utils
 
 def init_db(db):
     if len(db.all()) != 1:
-        db.purge()
+        try:
+            db.truncate()
+        except:
+            db.purge() # temporary
         db.insert({"afk": False, "note": "", "know": [], "since": 0})
 
 

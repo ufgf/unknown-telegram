@@ -24,6 +24,9 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 db = TinyDB('db.json')
 
+# TODO: Do this better
+restart = False
+
 logging.info("Loading modules...")
 
 modules = moduling.get_modules(
@@ -31,95 +34,91 @@ modules = moduling.get_modules(
 
 logging.info("Modules loaded: {}".format(len(modules)))
 
-# TODO: Do this better
-restart = False
+class CoreModule(moduling.Module):
+    def __init__(self):
+        self.name = "Core"
+        self.props = {
+            "commands": {
+                "help": self.help_cmd,
+                "update": self.update_cmd,
+                "restart": self.restart_cmd
+            },
+            "incoming_handler": None,
+            "system": True
+        }
 
+    def format_command(self, mod):
+        cmds = []
+        for cmdname, _ in mod.props["commands"].items():
+            cmds.append(cmdname)
+        if len(cmds) == 0:
+            return "<b>• {}</b>".format(mod.name)
+        return "<b>• {}:</b> <code>{}</code>".format(mod.name, ', '.join(cmds))
 
-def format_cmd(mod):
-    cmds = []
-    for cmdname, _ in mod.props["commands"].items():
-        cmds.append(cmdname)
-    if len(cmds) == 0:
-        return "<b>• {}</b>".format(mod.name)
-    return "<b>• {}:</b> <code>{}</code>".format(mod.name, ', '.join(cmds))
+    async def help_cmd(self, client, message, cmd):
+        sysmods = []
+        usermods = []
+        for mod in modules:
+            cmd = self.format_command(mod)
+            if mod.props["system"]:
+                sysmods.append(cmd)
+                continue
+            usermods.append(cmd)
+        await utils.send(message, "<b>Help for Unknown Telegram</b>\n\n<b>System Modules:</b>\n{}\n\n<b>User Modules:</b>\n{}".format('\n'.join(sysmods), '\n'.join(usermods)))
 
+    async def update_cmd(self, client, message, cmd):
+        await utils.send(message, "<b>Fetching last version from the git...</b>")
+        repo = Repo(ROOT_DIR)
+        try:
+            origin = repo.remotes['origin']
+            repo.delete_remote(origin)
+        except:
+            pass
+        try:
+            origin = repo.create_remote('origin', GIT_MASTER)
+        except:
+            await utils.send(message, "<b>Can't recreate origin!</b>")
+            return
+        hash = ""
+        newhash = ""
+        try:
+            hash = repo.commit("master").__str__()
+        except:
+            pass
+        try:
+            fetch = origin.fetch()
+            newhash = fetch[0].commit.__str__()
+        except:
+            await utils.send(message, "<b>Invalid git credentials!</b>")
+            return
+        if not 'master' in repo.heads:
+            repo.create_head("master", origin.refs.master)
+        repo.heads.master.set_tracking_branch(origin.refs.master)
+        repo.heads.master.checkout(True)
+        if hash == newhash:
+            await utils.send(message, "<b>Already up to date!</b>")
+            return
+        origin.pull()
+        await utils.send(message, "<b>Updating requirements...</b>")
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "install", "--user", "-r",
+                            os.path.join(ROOT_DIR, "requirements.txt")])
+        except subprocess.CalledProcessError:
+            await utils.send(message, "<b>Can't update requirements!</b>")
+            return
+        await utils.send(message, "<b>Update completed!</b>")
+        global restart
+        restart = True
+        await client.disconnect()
+        return
 
-async def help_cmd(client, message):
-    sysmods = []
-    usermods = []
-    for mod in modules:
-        cmd = format_cmd(mod)
-        if mod.props["system"]:
-            sysmods.append(cmd)
-            continue
-        usermods.append(cmd)
-    await utils.send(message, "<b>Help for Unknown Telegram</b>\n\n<b>System Modules:</b>\n{}\n\n<b>User Modules:</b>\n{}".format('\n'.join(sysmods), '\n'.join(usermods)))
-    return True
+    async def restart_cmd(self, client, message, cmd):
+        await utils.send(message, "<b>Restarting...</b>")
+        global restart
+        restart = True
+        await client.disconnect()
 
-
-async def update_cmd(client, message):
-    await utils.send(message, "<b>Fetching last version from the git...</b>")
-    repo = Repo(ROOT_DIR)
-    try:
-        origin = repo.remotes['origin']
-        repo.delete_remote(origin)
-    except:
-        pass
-    try:
-        origin = repo.create_remote('origin', GIT_MASTER)
-    except:
-        await utils.send(message, "<b>Can't recreate origin!</b>")
-        return True
-    hash = ""
-    newhash = ""
-    try:
-        hash = repo.commit("master").__str__()
-    except:
-        pass
-    try:
-        fetch = origin.fetch()
-        newhash = fetch[0].commit.__str__()
-    except:
-        await utils.send(message, "<b>Invalid git credentials!</b>")
-        return True
-    if not 'master' in repo.heads:
-        repo.create_head("master", origin.refs.master)
-    repo.heads.master.set_tracking_branch(origin.refs.master)
-    repo.heads.master.checkout(True)
-    if hash == newhash:
-        await utils.send(message, "<b>Already up to date!</b>")
-        return True
-    origin.pull()
-    await utils.send(message, "<b>Updating requirements...</b>")
-    try:
-        subprocess.run([sys.executable, "-m", "pip", "install", "--user", "-r",
-                        os.path.join(ROOT_DIR, "requirements.txt")])
-    except subprocess.CalledProcessError:
-        await utils.send(message, "<b>Can't update requirements!</b>")
-        return True
-    await utils.send(message, "<b>Update completed!</b>")
-    global restart
-    restart = True
-    await client.disconnect()
-    return True
-
-
-async def restart_cmd(client, message):
-    await utils.send(message, "<b>Restarting...</b>")
-    global restart
-    restart = True
-    await client.disconnect()
-    return True
-
-
-async def core_handler(client, message, command):
-    if command.cmd == "help":
-        return (await help_cmd(client, message))
-    if command.cmd == "update":
-        return (await update_cmd(client, message))
-    if command.cmd == "restart":
-        return (await restart_cmd(client, message))
-    return False
+modules.insert(0, CoreModule())
 
 
 async def outgoing_handler(event):
@@ -127,8 +126,6 @@ async def outgoing_handler(event):
     message = event.message
     command = cmd.Command(message.raw_text)
     if command.full == "":
-        return
-    if (await core_handler(client, message, command)):
         return
     for module in modules:
         if command.cmd in module.props["commands"]:
@@ -138,7 +135,6 @@ async def outgoing_handler(event):
                 logging.error(e)
                 await utils.send(message, "<b>An error occurred while executing the module.</b>")
             break
-
 
 async def incoming_handler(event):
     client = event._client
@@ -150,6 +146,7 @@ async def incoming_handler(event):
             await module.props["incoming_handler"](client, message)
         except Exception as e:
             logging.error(e)
+
 
 client = TelegramClient(
     'utg',
