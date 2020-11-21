@@ -23,6 +23,6 @@ class Module(moduling.Module):
         try:
             res = await meval(cmd.arg, globals(), db=self.db, client=client, message=message, cmd=cmd, reply=reply)
         except Exception as e:
-            await utils.send(message, "<b>Can't eval expression:</b>\n<code>{}</code>".format(e))
+            await utils.send(message, "<b>Can't eval expression:</b>\n<code>{}</code>\n\n<b>Source:</b>\n<code>{}</code>".format(utils.escape_html(str(e)), utils.escape_html(cmd.arg)))
             return
         await utils.send(message, "<b>Expression: </b><code>{}</code>\n<b>Result: </b><code>{}</code>".format(utils.escape_html(cmd.arg), utils.escape_html(str(res))))
