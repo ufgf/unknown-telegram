@@ -74,7 +74,7 @@ class Module(moduling.Module):
         if note is not None:
             await self.eval(client, message, cmd, note["raw"])
     
-    async def list_cmd(self, client, message, cmd):
+    async def notes_cmd(self, client, message, cmd):
         results = list("<code>{}</code>".format(utils.escape_html(x["name"])) for x in self.db)
         if len(results) == 0:
             await utils.send(message, "<b>You don't have any notes yet</b>")
