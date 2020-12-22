@@ -4,7 +4,7 @@
 import time
 import tinydb
 
-from telethon.tl.types import InputPeerUser
+from telethon.tl.types import User
 
 import moduling
 import utils
@@ -44,10 +44,10 @@ class Module(moduling.Module):
             await utils.send(message, "<b>I'm no longer AFK</b>\n<b>Time spent in AFK: </b><i>{}</i>".format(utils.format_seconds(time.time() - item["since"])))
 
     async def incoming(self, client, message):
-        if isinstance(message._input_chat, InputPeerUser):
-            if not message._sender is None:
-                if message._sender.bot:
-                    return
+        sender = await message.get_sender()
+        if isinstance(sender, User):
+            if sender.bot:
+                return
             init_db(self.db)
             item = self.db.all()[0]
             if message.from_id in item["know"] or not item["afk"]:
