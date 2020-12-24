@@ -44,6 +44,8 @@ class Module(moduling.Module):
             await utils.send(message, "<b>I'm no longer AFK</b>\n<b>Time spent in AFK: </b><i>{}</i>".format(utils.format_seconds(time.time() - item["since"])))
 
     async def incoming(self, client, message):
+        if not message.is_private:
+            return
         sender = await message.get_sender()
         if isinstance(sender, User):
             if sender.bot:
