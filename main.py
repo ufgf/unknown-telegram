@@ -152,7 +152,7 @@ client = TelegramClient(
     'utg',
     api_id=6,
     api_hash="eb06d4abfb49dc3eeb1aeb98ae0f581e",
-    app_version="6.0.1 (19117)",
+    app_version="7.3.1 (22065)",
     device_model="OnePlusONEPLUS A5010",
     system_version="SDK 29")
 client.parse_mode = "html"
